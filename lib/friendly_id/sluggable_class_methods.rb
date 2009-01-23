@@ -49,8 +49,7 @@ module FriendlyId::SluggableClassMethods
 
   # Finds multiple records using the friendly ids, or the records' ids.
   def find_some_with_friendly(ids_and_names, options) #:nodoc:#
-
-    slugs, ids = get_slugs_and_ids(ids_and_names, options)
+    slugs, ids = get_slugs_and_ids(ids_and_names)
     results = []
 
     find_options = {:select => "#{self.table_name}.*"}
@@ -98,7 +97,9 @@ module FriendlyId::SluggableClassMethods
       # the id_or_name is a number, assume that it is a regular record id.
       slug ? slugs << slug : (ids << id_or_name if id_or_name =~ /\A\d*\z/)
     end
-    return slugs, ids
-  end
 
+    ids = (ids_and_names - slugs.map(&:name)).map { |id| id =~ /\A\d*\z/ }
+    
+    [slugs, ids]
+  end
 end
