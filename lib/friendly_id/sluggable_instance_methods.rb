@@ -97,13 +97,13 @@ module FriendlyId::SluggableInstanceMethods
   def set_slug
     if self.class.friendly_id_options[:use_slug] && new_slug_needed?
       @most_recent_slug = nil
-      slug_attributes = {:name => slug_text}
 
       # If we're renaming back to a previously used friendly_id, delete the
       # slug so that we can recycle the name without having to use a sequence.
-      slugs.find(:all, :conditions => {:name => slug_text}).each { |s| s.destroy }
+      Slug.delete_all(:sluggable_id => id, :sluggable_type => self.class.name,
+        :name => slug_text)
 
-      slug = slugs.build slug_attributes
+      slug = slugs.build(:name => slug_text)
       slug
     end
   end
