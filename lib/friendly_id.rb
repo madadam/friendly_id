@@ -1,7 +1,7 @@
 require 'friendly_id/helpers'
 require 'friendly_id/slug'
 
-# FriendlyId is a comprehensize Rails plugin/gem for slugging and permalinks.
+# FriendlyId is a comprehensive Rails plugin/gem for slugging and permalinks.
 module FriendlyId
 
   # Default options for has_friendly_id.
@@ -27,6 +27,9 @@ module FriendlyId
 
   # This error is raised when it's not possible to generate a unique slug.
   class SlugGenerationError < StandardError ; end
+
+  # This error is raised when find is called with non unique id
+  class RecordNotUnique < ActiveRecord::ActiveRecordError; end
 
   module ClassMethods
 

@@ -35,13 +35,11 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table "slugs", :force => true do |t|
     t.column "name", "string"
     t.column "sluggable_id", "integer"
-    t.column "sequence", "integer", :null       => false, :default => 1
+    t.column "sequence", "integer", :null => false, :default => 1
     t.column "sluggable_type", "string", :limit => 40
-    t.column "scope", "string", :limit          => 40
     t.column "created_at", "datetime"
   end
 
-  add_index "slugs", ["sluggable_id"], :name           => "index_slugs_on_sluggable_id"
-  add_index "slugs", ["name", "sluggable_type", "scope", "sequence"], :name => "index_slugs_on_n_s_s_and_s", :unique => true
-
+  add_index "slugs", ["sluggable_id"], :name => "index_slugs_on_sluggable_id"
+  add_index "slugs", ["name", "sluggable_type", "sequence"], :name => "index_slugs_on_n_s_and_s"
 end
