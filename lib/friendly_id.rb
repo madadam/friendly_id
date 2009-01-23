@@ -28,9 +28,6 @@ module FriendlyId
   # This error is raised when it's not possible to generate a unique slug.
   class SlugGenerationError < StandardError ; end
 
-  # This error is raised when find is called with non unique id
-  class RecordNotUnique < ActiveRecord::ActiveRecordError; end
-
   module ClassMethods
 
     # Set up an ActiveRecord model to use a friendly_id.

@@ -7,15 +7,12 @@ module FriendlyId::SluggableClassMethods
     class << base
       alias_method_chain :find_one, :friendly
       alias_method_chain :find_some, :friendly
-      alias_method_chain :validate_find_options, :friendly
     end
 
   end
 
   # Finds a single record using the friendly id, or the record's id.
   def find_one_with_friendly(id_or_name, options) #:nodoc:#
-
-    scope = options.delete(:scope)
     return find_one_without_friendly(id_or_name, options) if id_or_name.is_a?(Fixnum)
 
     find_options = {:select => "#{self.table_name}.*"}
@@ -25,7 +22,6 @@ module FriendlyId::SluggableClassMethods
 
     find_options[:conditions] = {
       "#{Slug.table_name}.name"     => name,
-      "#{Slug.table_name}.scope"    => scope,
       "#{Slug.table_name}.sequence" => sequence
     }
 
@@ -49,7 +45,6 @@ module FriendlyId::SluggableClassMethods
     end
 
     raise e
-
   end
 
   # Finds multiple records using the friendly ids, or the records' ids.
@@ -73,11 +68,6 @@ module FriendlyId::SluggableClassMethods
     assign_finder_slugs(slugs, results)
 
     results
-  end
-
-  def validate_find_options_with_friendly(options) #:nodoc:#
-    options.assert_valid_keys([:conditions, :include, :joins, :limit, :offset,
-      :order, :select, :readonly, :group, :from, :lock, :having, :scope])
   end
 
   private

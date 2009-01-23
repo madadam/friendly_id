@@ -82,9 +82,28 @@ class Slug < ActiveRecord::Base
 
   def set_sequence
     return unless new_record?
-    last = Slug.find(:first, :conditions => { :name => name, :scope => scope,
-      :sluggable_type => sluggable_type}, :order => "sequence DESC",
-      :select => 'sequence')
+
+    options = {:order => 'sequence DESC', :select => 'sequence'}
+
+    condition_sql = "#{self.class.quoted_table_name}.name = ?"
+    condition_params = [name]
+
+    condition_sql << " AND #{self.class.quoted_table_name}.sluggable_type = ?"
+    condition_params << sluggable_type
+
+    if scope = sluggable.class.friendly_id_options[:scope]
+      options[:joins] = "INNER JOIN #{sluggable.class.quoted_table_name} ON #{sluggable.class.quoted_table_name}.#{sluggable.class.primary_key} = #{self.class.quoted_table_name}.sluggable_id"
+      
+      Array(scope).each do |scope_item|
+        scope_value = sluggable.send(scope_item)
+        condition_sql << " AND #{sluggable.class.quoted_table_name}.#{scope_item} #{self.class.send(:attribute_condition, scope_value)}"
+        condition_params << scope_value
+      end
+    end
+
+    options[:conditions] = [condition_sql, *condition_params]
+
+    last = Slug.find(:first, options)
     self.sequence = last.sequence + 1 if last
   end
 
