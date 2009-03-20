@@ -150,7 +150,7 @@ FriendlyId can generate unique slugs within a given scope. For example:
 
   class Restaurant < ActiveRecord::Base
     belongs_to :city
-    has_friendly_id :name, :use_slug => true, :scope => :city
+    has_friendly_id :name, :use_slug => true, :scope => :city_id
   end
 
   class City < ActiveRecord::Base
@@ -161,16 +161,17 @@ FriendlyId can generate unique slugs within a given scope. For example:
   http://example.org/cities/seattle/restaurants/joes-diner
   http://example.org/cities/chicago/restaurants/joes-diner
 
-  Restaurant.find("joes-diner", :scope => "seattle") # returns 1 record
-  Restaurant.find("joes-diner", :scope => "chicago") # returns 1 record
+  seattle = City.find('seattle')
+  chicago = City.find('chicago')
+
+  seattle.restaurants.find("joes-diner") # returns 1 record
+  chicago.restaurants.find("joes-diner") # returns 1 record
   Restaurant.find("joes-diner") # returns both records
 
 
-The value for the :scope key in your model can be a custom method you define,
-or the name of a relation. If it's the name of a relation, then the scope's
-text value will be the result of calling <code>to_param</code> on the related
-model record. In the example above, the city model also uses FriendlyId and so
-its <code>to_param</code> method returns its friendly_id: chicago or seattle.
+The value for the :scope key in your model follows the same rules as the
+:scope option in +validates_uniqueness_of+ macro. That is, it can be 
+some database column of the model, or even array of columns.
 
 This feature is new in FriendlyId 2 and should be considered of experimental
 quality. Please don't use this for code that needs to run on the Space
