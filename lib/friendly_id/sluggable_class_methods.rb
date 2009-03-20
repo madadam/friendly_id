@@ -34,17 +34,6 @@ module FriendlyId::SluggableClassMethods
     end
 
     result
-  rescue ActiveRecord::RecordNotFound => e
-
-    if friendly_id_options[:scope]
-      if !scope
-        e.message << "; expected scope but got none"
-      else
-        e.message << " and scope=#{scope}"
-      end
-    end
-
-    raise e
   end
 
   # Finds multiple records using the friendly ids, or the records' ids.
@@ -81,15 +70,13 @@ module FriendlyId::SluggableClassMethods
   end
 
   # Build arrays of slugs and ids, for the find_some_with_friendly method.
-  def get_slugs_and_ids(ids_and_names, options) #:nodoc:#
-    scope = options.delete(:scope)
+  def get_slugs_and_ids(ids_and_names) #:nodoc:#
     slugs = []
     ids = []
     ids_and_names.each do |id_or_name|
       name, sequence = Slug.parse id_or_name
       slug = Slug.find(:first, :conditions => {
         :name           => name,
-        :scope          => scope,
         :sequence       => sequence,
         :sluggable_type => base_class.name
       })

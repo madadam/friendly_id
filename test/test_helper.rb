@@ -31,6 +31,7 @@ ensure
 end
 
 ActiveRecord::Base.establish_connection :adapter => "sqlite3", :database => ":memory:"
+ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + '/test.log')
 silence_stream(STDOUT) do
   load(File.dirname(__FILE__) + "/schema.rb")
 end
