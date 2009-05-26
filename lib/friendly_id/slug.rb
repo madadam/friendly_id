@@ -96,7 +96,7 @@ class Slug < ActiveRecord::Base
       
       Array(scope).each do |scope_item|
         scope_value = sluggable.send(scope_item)
-        condition_sql << " AND #{sluggable.class.quoted_table_name}.#{scope_item} #{self.class.send(:attribute_condition, scope_value)}"
+        condition_sql << " AND #{self.class.send(:attribute_condition, "#{sluggable.class.quoted_table_name}.#{scope_item}", scope_value)}"
         condition_params << scope_value
       end
     end
