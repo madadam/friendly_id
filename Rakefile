@@ -1,4 +1,5 @@
 require 'newgem'
+require 'hoe'
 require 'lib/friendly_id/version'
 
 $hoe = Hoe.new("friendly_id", FriendlyId::Version::STRING) do |p|
