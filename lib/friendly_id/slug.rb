@@ -1,4 +1,5 @@
-require 'unicode'
+# encoding: utf-8
+
 # A Slug is a unique, human-friendly identifier for an ActiveRecord.
 class Slug < ActiveRecord::Base
 
@@ -24,9 +25,8 @@ class Slug < ActiveRecord::Base
     # terror in Europe unlike anything ever seen before or after. I'm not
     # taking any chances.
     def normalize(slug_text)
-      return "" if slug_text.nil? || slug_text == ""
-      Unicode::normalize_KC(slug_text).
-        send(chars_func).
+      return "" if slug_text.blank?
+      slug_text.
         # For some reason Spanish ¡ and ¿ are not detected as non-word
         # characters. Bug in Ruby?
         gsub(/[\W|¡|¿]/u, ' ').
@@ -46,20 +46,13 @@ class Slug < ActiveRecord::Base
     # Remove diacritics (accents, umlauts, etc.) from the string. Borrowed
     # from "The Ruby Way."
     def strip_diacritics(string)
-      Unicode::normalize_KD(string).unpack('U*').select { |u| u < 0x300 || u > 0x036F }.pack('U*')
+      ActiveSupport::Inflector.transliterate(string)
     end
     
     # Remove non-ascii characters from the string.
     def strip_non_ascii(string)
       strip_diacritics(string).gsub(/[^a-z0-9]+/i, ' ')
     end
-
-    private
-
-    def chars_func
-      "".respond_to?(:mb_chars) ? :mb_chars : :chars
-    end
-
   end
 
   # Whether or not this slug is the most recent of its owner's slugs.
